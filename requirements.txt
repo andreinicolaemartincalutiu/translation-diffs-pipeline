@@ -1,0 +1,15 @@
+jupyterlab>=4.0
+ipykernel>=6.25
+
+numpy>=1.26
+pandas>=2.1
+
+sentence-transformers>=3.0
+torch>=2.2
+
+transformers>=4.40
+vaderSentiment>=3.3.2   
+
+networkx>=3.2
+
+flask>=3.0

@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Alignment Review</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap"
+            rel="stylesheet">
+        <style>
+    :root {
+        --bg-dark: #0a0e1a;
+        --bg-panel: #151925;
+        --text-primary: #e8eaed;
+        --text-secondary: #9195a0;
+        --accent-gold: #d4af37;
+        --accent-amber: #f59e0b;
+        --accent-blue: #4a90e2;
+        --accent-purple: #8b5cf6;
+        --accent-red: #ef4444;
+        --accent-green: #10b981;
+        --border: #2a2f3e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Crimson Pro', serif;
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        padding: 100px 40px 40px;
+        min-height: 100vh;
+    }
+
+    header {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        height: 80px;
+        background: var(--bg-panel);
+        border-bottom: 1px solid var(--border);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+    }
+
+    h1 { font-size: 1.8em; font-weight: 300; letter-spacing: 2px; color: var(--accent-gold); }
+
+    .stats {
+        display: flex;
+        gap: 22px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.78em;
+        color: var(--text-secondary);
+        align-items: center;
+    }
+    .stats strong { color: var(--text-primary); margin-left: 4px; }
+    #saved { color: var(--accent-green); }
+
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 14px 20px;
+        margin-bottom: 20px;
+    }
+    .group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    button {
+        padding: 9px 16px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-primary);
+        font-family: 'Space Mono', monospace;
+        font-size: 0.74em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    button:hover:not(:disabled) { background: var(--accent-gold); color: var(--bg-dark); border-color: var(--accent-gold); }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
+    button.active { background: var(--accent-gold); color: var(--bg-dark); border-color: var(--accent-gold); }
+    button.primary { border-color: rgba(212,175,55,0.55); color: var(--accent-gold); }
+    button.danger { border-color: rgba(239,68,68,0.45); color: var(--accent-red); }
+
+    input[type="text"], textarea {
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        font-family: 'Crimson Pro', serif;
+        font-size: 1em;
+    }
+    input[type="text"]:focus, textarea:focus { outline: none; border-color: var(--accent-gold); }
+
+    .progress { font-family: 'Space Mono', monospace; font-size: 0.78em; color: var(--text-secondary); margin-left: 6px; }
+
+    .card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; padding: 24px; }
+
+    .unit-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 18px;
+    }
+    .unit-id { font-family: 'Space Mono', monospace; color: var(--accent-gold); letter-spacing: 1px; }
+
+    .badge {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.68em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 3px 9px;
+        border-radius: 3px;
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+    }
+    .badge.t-pair  { color: var(--accent-blue);   border-color: var(--accent-blue); }
+    .badge.t-group { color: var(--accent-purple); border-color: var(--accent-purple); }
+    .badge.t-only  { color: var(--accent-amber);  border-color: var(--accent-amber); }
+    .badge.s-pending   { color: var(--accent-amber); border-color: var(--accent-amber); }
+    .badge.s-confirmed { color: var(--accent-green); border-color: var(--accent-green); }
+    .badge.s-edited    { color: var(--accent-blue);  border-color: var(--accent-blue); }
+
+    .scores { font-family: 'Space Mono', monospace; font-size: 0.74em; color: var(--text-secondary); }
+    .scores .warn { color: var(--accent-red); }
+
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .col-title {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.74em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+    }
+
+    .line { padding: 10px 12px; margin-bottom: 8px; border-left: 3px solid transparent; border-radius: 0 4px 4px 0; }
+    .line.ctx { opacity: 0.5; cursor: pointer; border-left-color: var(--border); }
+    .line.ctx:hover { opacity: 0.85; }
+    .line.member { background: rgba(255,255,255,0.04); border-left-color: var(--accent-gold); }
+    .line .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.7em;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+    .line .meta .uid { color: var(--accent-gold); }
+    .line .meta .who { color: var(--text-primary); }
+    .line .meta button { padding: 2px 8px; font-size: 0.95em; margin-left: auto; }
+    .line .text { font-size: 1.05em; line-height: 1.55; }
+    .line.member .text { font-style: italic; }
+
+    .empty-slot {
+        border: 1px dashed var(--border);
+        padding: 14px;
+        text-align: center;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.74em;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+    }
+    .error-box { color: var(--accent-red); border-color: var(--accent-red); text-align: left; line-height: 1.6; }
+
+    .notes { width: 100%; min-height: 60px; margin-top: 14px; resize: vertical; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; align-items: center; }
+
+    .hints {
+        margin-top: 16px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.7em;
+        color: var(--text-secondary);
+        line-height: 1.7;
+    }
+
+    .toast {
+        position: fixed;
+        top: 20px; right: 20px;
+        padding: 12px 18px;
+        border-radius: 4px;
+        background: var(--bg-panel);
+        font-family: 'Space Mono', monospace;
+        font-size: 0.78em;
+        z-index: 1000;
+        max-width: 420px;
+    }
+    .toast.ok  { color: var(--accent-green); border: 1px solid var(--accent-green); }
+    .toast.err { color: var(--accent-red);   border: 1px solid var(--accent-red); }
+
+    @media (max-width: 900px) {
+        body { padding: 100px 16px 16px; }
+        header { padding: 0 16px; }
+        h1 { font-size: 1.3em; }
+        .stats { display: none; }
+        .cols { grid-template-columns: 1fr; }
+    }
+</style>
+    </head>
+    <body>
+        <header>
+            <h1>ALIGNMENT REVIEW</h1>
+            <div class="stats">
+                <span>Units<strong id="st-units">0</strong></span>
+                <span>To review<strong id="st-review">0</strong></span>
+                <span>Pending<strong id="st-pending">0</strong></span>
+                <span>Confirmed<strong id="st-confirmed">0</strong></span>
+                <span>Edited<strong id="st-edited">0</strong></span>
+                <span id="saved"></span>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="controls">
+                <div class="group">
+                    <button id="btn-prev">← Prev</button>
+                    <button id="btn-next">Next →</button>
+                    <span class="progress" id="progress"></span>
+                </div>
+                <div class="group">
+                    <button data-filter="pending">Pending</button>
+                    <button data-filter="review">Needs review</button>
+                    <button data-filter="all">All</button>
+                </div>
+                <div class="group">
+                    <input type="text" id="jump"
+                        placeholder="Go to P106, U64, AL105…">
+                    <button id="btn-jump">Go</button>
+                </div>
+            </div>
+
+            <div class="card" id="unit"><div
+                    class="empty-slot">Loading…</div></div>
+
+            <div class="hints">
+                C = confirm · ← → = navigate · Ctrl+Z = undo ·
+                click a dimmed context line to jump to its unit ·
+                Detach works on the first or last line of a side ·
+                units you edit are marked "edited" and count as reviewed
+            </div>
+        </div>
+
+        <script>
+const CONTEXT = 2;
+const SIDES = ['published', 'unpublished'];
+
+let DATA = null;
+let LINES = {};
+let SIDE_LINES = {};
+let CHAR = {};
+let units = [];
+let view = [];
+let cur = 0;
+let filter = 'review';
+let undoStack = [];
+let unitOfLine = {};
+let noteDirty = false;
+
+function el(tag, attrs = {}, ...children) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+        if (v === null || v === undefined || v === false) continue;
+        if (k === 'class') e.className = v;
+        else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+        else if (k === 'disabled') e.disabled = true;
+        else e.setAttribute(k, v);
+    }
+    for (const c of children.flat()) {
+        if (c === null || c === undefined || c === false) continue;
+        e.append(c instanceof Node ? c : document.createTextNode(String(c)));
+    }
+    return e;
+}
+
+function toast(msg, kind = 'ok') {
+    const t = el('div', { class: `toast ${kind}` }, msg);
+    document.body.append(t);
+    setTimeout(() => t.remove(), kind === 'err' ? 6000 : 2200);
+}
+
+function setText(id, value) { document.getElementById(id).textContent = value; }
+
+function isPending(u) { return u.needs_review && u.review.status === 'pending'; }
+
+function inFilter(u) {
+    if (filter === 'pending') return isPending(u);
+    if (filter === 'review') return u.needs_review;
+    return true;
+}
+
+function typeOf(u) {
+    const a = u.published.length, b = u.unpublished.length;
+    if (!a) return 'unpublished_only';
+    if (!b) return 'published_only';
+    return `${a}:${b}`;
+}
+
+function typeClass(t) {
+    if (t === '1:1') return 't-pair';
+    if (t.endsWith('_only')) return 't-only';
+    return 't-group';
+}
+
+function speakerLabel(l) {
+    if (l.speakers_raw && l.speakers_raw.length) return l.speakers_raw.join(', ');
+    return (l.speakers || []).map(c => (CHAR[c] ? CHAR[c].display : c)).join(', ') || '—';
+}
+
+function rebuild() {
+    unitOfLine = {};
+    units.forEach((u, i) => { for (const s of SIDES) for (const id of u[s]) unitOfLine[id] = i; });
+    view = units.map((_, i) => i).filter(i => inFilter(units[i]));
+    updateStats();
+}
+
+function currentIndex() { return view.length ? view[Math.min(cur, view.length - 1)] : -1; }
+
+function focusUnit(idx) {
+    let p = view.indexOf(idx);
+    if (p < 0) p = view.findIndex(i => i >= idx);
+    if (p < 0) p = view.length - 1;
+    cur = Math.max(0, p);
+    render();
+}
+
+function updateStats() {
+    const rev = units.filter(u => u.needs_review);
+    setText('st-units', units.length);
+    setText('st-review', rev.length);
+    setText('st-pending', rev.filter(u => u.review.status === 'pending').length);
+    setText('st-confirmed', units.filter(u => u.review.status === 'confirmed').length);
+    setText('st-edited', units.filter(u => u.review.status === 'edited').length);
+}
+
+function sideContext(idx, side) {
+    const u = units[idx];
+    const members = u[side];
+    const all = SIDE_LINES[side];
+    if (members.length) {
+        const first = LINES[members[0]].order;
+        const last = LINES[members[members.length - 1]].order;
+        return {
+            members,
+            before: all.slice(Math.max(0, first - CONTEXT), first),
+            after: all.slice(last + 1, last + 1 + CONTEXT),
+        };
+    }
+    let prev = -1;
+    for (let k = idx - 1; k >= 0; k--) {
+        const m = units[k][side];
+        if (m.length) { prev = LINES[m[m.length - 1]].order; break; }
+    }
+    return {
+        members,
+        before: all.slice(Math.max(0, prev - CONTEXT + 1), prev + 1),
+        after: all.slice(prev + 1, prev + 1 + CONTEXT),
+    };
+}
+
+function badge(text, cls) { return el('span', { class: `badge ${cls || ''}` }, text); }
+
+function scoresEl(u) {
+    const s = u.scores;
+    if (!s) {
+        return el('div', { class: 'scores' },
+            u.review.status === 'edited' ? 'edited manually — metrics are recomputed in the next stage' : '');
+    }
+    const agree = s.speaker_agreement !== undefined ? s.speaker_agreement : (s.speaker_match ? 1 : 0);
+    return el('div', { class: 'scores' },
+        `text ${s.text_sim.toFixed(2)} · `,
+        el('span', { class: agree < 1 ? 'warn' : '' }, `speaker ${Number(agree).toFixed(2)}`),
+        ` · length ${s.len_ratio.toFixed(2)} · conf ${u.confidence}`);
+}
+
+function lineEl(l, kind, u) {
+    const meta = el('div', { class: 'meta' },
+        el('span', { class: 'uid' }, l.uid),
+        el('span', { class: 'who' }, speakerLabel(l)),
+        el('span', {}, `${l.word_count} w`));
+
+    if (kind === 'ctx') {
+        const owner = units[unitOfLine[l.uid]];
+        meta.append(el('span', {}, `${owner.uid} · ${owner.type}`));
+        return el('div', { class: 'line ctx', title: 'Go to this unit', onclick: () => jumpTo(l.uid) },
+            meta, el('div', { class: 'text' }, l.text));
+    }
+
+    const arr = u[l.translation];
+    const pos = arr.indexOf(l.uid);
+    const total = u.published.length + u.unpublished.length;
+    const edge = pos === 0 || pos === arr.length - 1;
+    const title = total < 2 ? 'This unit has a single line'
+        : !edge ? 'Only the first or last line of a side can be detached'
+        : 'Detach this line into its own unit';
+    meta.append(el('button', {
+        class: 'danger', title, disabled: total < 2 || !edge,
+        onclick: (ev) => { ev.stopPropagation(); detach(l.uid); },
+    }, 'Detach'));
+    return el('div', { class: 'line member' }, meta, el('div', { class: 'text' }, l.text));
+}
+
+function render() {
+    const box = document.getElementById('unit');
+    box.replaceChildren();
+    updateStats();
+    document.querySelectorAll('[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+
+    if (!view.length) {
+        box.append(el('div', { class: 'empty-slot' },
+            filter === 'pending' ? 'No pending units — the review is complete.' : 'No units for this filter.'));
+        setText('progress', '');
+        return;
+    }
+    cur = Math.min(cur, view.length - 1);
+    const idx = view[cur];
+    const u = units[idx];
+
+    const head = el('div', { class: 'unit-head' },
+        el('div', { class: 'group' },
+            el('span', { class: 'unit-id' }, u.uid),
+            badge(u.type, typeClass(u.type)),
+            badge(u.review.status, `s-${u.review.status}`)),
+        scoresEl(u));
+
+    const cols = el('div', { class: 'cols' });
+    for (const s of SIDES) {
+        const { members, before, after } = sideContext(idx, s);
+        const col = el('div', {}, el('div', { class: 'col-title' }, DATA.meta.translations[s].label));
+        before.forEach(l => col.append(lineEl(l, 'ctx', u)));
+        if (members.length) members.forEach(id => col.append(lineEl(LINES[id], 'member', u)));
+        else col.append(el('div', { class: 'empty-slot' }, 'No corresponding line in this translation'));
+        after.forEach(l => col.append(lineEl(l, 'ctx', u)));
+        cols.append(col);
+    }
+
+    const notes = el('textarea', { class: 'notes', placeholder: 'Notes (optional)…' });
+    notes.value = u.review.note || '';
+    notes.addEventListener('input', () => { u.review.note = notes.value; noteDirty = true; });
+    notes.addEventListener('blur', () => { if (noteDirty) { noteDirty = false; save(); } });
+
+    const actions = el('div', { class: 'actions' },
+        el('button', { class: 'primary', onclick: confirmUnit }, '✓ Confirm (C)'),
+        el('button', { onclick: () => mergeUnits(idx - 1), disabled: idx === 0 }, '⇤ Merge with previous'),
+        el('button', { onclick: () => mergeUnits(idx), disabled: idx === units.length - 1 }, 'Merge with next ⇥'),
+        el('button', { class: 'danger', onclick: () => unpair(idx),
+                       disabled: !(u.published.length && u.unpublished.length) }, 'Unpair'),
+        el('button', { onclick: undo, disabled: !undoStack.length }, 'Undo'));
+
+    box.append(head, cols, notes, actions);
+    setText('progress', `Unit ${cur + 1} of ${view.length}`);
+}
+
+function snapshot() {
+    undoStack.push(JSON.stringify(units));
+    if (undoStack.length > 100) undoStack.shift();
+}
+
+function newUid(base) {
+    const root = base.replace(/[a-z]+$/, '');
+    const used = new Set(units.map(u => u.uid));
+    for (const ch of 'abcdefghijklmnopqrstuvwxyz') {
+        if (!used.has(root + ch)) return root + ch;
+    }
+    return `${root}_${Date.now()}`;
+}
+
+function makeUnit(uid, pub, unp, note = '') {
+    const ids = pub.concat(unp);
+    const u = {
+        uid,
+        type: '',
+        published: pub,
+        unpublished: unp,
+        position: +(ids.reduce((a, id) => a + LINES[id].position, 0) / ids.length).toFixed(4),
+        scores: null,
+        confidence: 'manual',
+        needs_review: true,
+        review: { status: 'edited', note },
+    };
+    u.type = typeOf(u);
+    return u;
+}
+
+async function detach(lineUid) {
+    const idx = unitOfLine[lineUid];
+    const u = units[idx];
+    const side = LINES[lineUid].translation;
+    const pos = u[side].indexOf(lineUid);
+    snapshot();
+    const rest = makeUnit(u.uid,
+        side === 'published' ? u.published.filter(x => x !== lineUid) : u.published.slice(),
+        side === 'unpublished' ? u.unpublished.filter(x => x !== lineUid) : u.unpublished.slice(),
+        u.review.note || '');
+    const solo = makeUnit(newUid(u.uid),
+        side === 'published' ? [lineUid] : [],
+        side === 'unpublished' ? [lineUid] : []);
+    units.splice(idx, 1, ...(pos === 0 ? [solo, rest] : [rest, solo]));
+    await commit(units.indexOf(rest));
+}
+
+async function unpair(idx) {
+    const u = units[idx];
+    snapshot();
+    const parts = [
+        ...u.published.map(id => makeUnit(null, [id], [])),
+        ...u.unpublished.map(id => makeUnit(null, [], [id])),
+    ];
+    parts[0].uid = u.uid;
+    parts[0].review.note = u.review.note || '';
+    units.splice(idx, 1, ...parts);
+    for (const p of parts.slice(1)) p.uid = newUid(u.uid);
+    await commit(idx);
+}
+
+async function mergeUnits(a) {
+    if (a < 0 || a + 1 >= units.length) return;
+    const A = units[a], B = units[a + 1];
+    snapshot();
+    const note = [A.review.note, B.review.note].filter(Boolean).join(' | ');
+    const m = makeUnit(A.uid, A.published.concat(B.published), A.unpublished.concat(B.unpublished), note);
+    units.splice(a, 2, m);
+    await commit(a);
+}
+
+async function confirmUnit() {
+    const idx = currentIndex();
+    if (idx < 0) return;
+    snapshot();
+    units[idx].review.status = 'confirmed';
+    await commit(idx, true);
+}
+
+async function undo() {
+    if (!undoStack.length) return;
+    const idx = currentIndex();
+    const before = units;
+    units = JSON.parse(undoStack.pop());
+    if (!(await save())) units = before;
+    rebuild();
+    focusUnit(Math.min(Math.max(idx, 0), units.length - 1));
+}
+
+async function commit(idx, advance = false) {
+    const ok = await save();
+    if (!ok) units = JSON.parse(undoStack.pop());
+    rebuild();
+    if (ok && advance) {
+        const next = units.findIndex((u, i) => i > idx && isPending(u));
+        if (next >= 0) { focusUnit(next); return; }
+        const anyPending = units.some(isPending);
+        toast(anyPending ? 'No pending units after this one' : 'All units reviewed');
+    }
+    focusUnit(Math.min(idx, units.length - 1));
+}
+
+async function save() {
+    try {
+        const r = await fetch('/api/alignment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ alignment: units }),
+        });
+        const d = await r.json();
+        if (!r.ok) { toast(`Not saved: ${d.error || r.status}`, 'err'); return false; }
+        setText('saved', `saved ${d.saved_at.slice(11)}`);
+        return true;
+    } catch (e) {
+        toast(`Server unreachable: ${e.message}`, 'err');
+        return false;
+    }
+}
+
+async function load() {
+    let d;
+    try {
+        const r = await fetch('/api/data');
+        d = await r.json();
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+    } catch (e) {
+        const box = document.getElementById('unit');
+        box.replaceChildren(el('div', { class: 'empty-slot error-box' }, `Could not load the review data: ${e.message}`));
+        return;
+    }
+    DATA = d;
+    LINES = d.lines;
+    units = d.alignment;
+    CHAR = Object.fromEntries(d.characters.map(c => [c.id, c]));
+    for (const s of SIDES) {
+        SIDE_LINES[s] = Object.values(LINES).filter(l => l.translation === s).sort((a, b) => a.order - b.order);
+    }
+    if (d.review_meta && d.review_meta.last_saved) setText('saved', `last saved ${d.review_meta.last_saved}`);
+    rebuild();
+    const first = view.findIndex(i => isPending(units[i]));
+    cur = first >= 0 ? first : 0;
+    render();
+}
+
+function next() { if (cur < view.length - 1) { cur++; render(); } }
+function prev() { if (cur > 0) { cur--; render(); } }
+
+function jumpTo(query) {
+    const q = String(query).trim().toUpperCase();
+    if (!q) return;
+    let idx = LINES[q] !== undefined ? unitOfLine[q] : units.findIndex(u => u.uid.toUpperCase() === q);
+    if (idx === undefined || idx < 0) { toast(`Not found: ${q}`, 'err'); return; }
+    if (!inFilter(units[idx])) { filter = 'all'; rebuild(); }
+    focusUnit(idx);
+}
+
+document.getElementById('btn-prev').addEventListener('click', prev);
+document.getElementById('btn-next').addEventListener('click', next);
+document.getElementById('btn-jump').addEventListener('click', () => jumpTo(document.getElementById('jump').value));
+document.getElementById('jump').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); jumpTo(e.target.value); }
+});
+document.querySelectorAll('[data-filter]').forEach(b => b.addEventListener('click', () => {
+    const idx = currentIndex();
+    filter = b.dataset.filter;
+    rebuild();
+    focusUnit(idx < 0 ? 0 : idx);
+}));
+
+document.addEventListener('keydown', e => {
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); return; }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === 'ArrowRight') next();
+    else if (e.key === 'ArrowLeft') prev();
+    else if (e.key.toLowerCase() === 'c') confirmUnit();
+});
+
+load();
+</script>
+    </body>
+</html>
